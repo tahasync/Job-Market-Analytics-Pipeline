@@ -1,0 +1,103 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": [
+          {
+            "id": "764d8583-057b-4b13-8877-380d60c5a359",
+            "name": "email_body",
+            "value": "## Job Market Pipeline Summary\n\n**Status:** {{ $json.pipeline_status }}\n**Run Date:** {{ $json.run_date }}\n**Total AI/ML/Data Jobs:** {{ $json.Q2_total_jobs_after_filter }}\n**Average Salary (USD):** ${{ $json.Q8_avg_salary_usd }}\n**Entry Level (0-1 yr) Jobs:** {{ $json.Q6_entry_level_jobs_count }}\n\n**Jobs by Source:**\n- Himalayas: {{ $json.Q3_jobs_per_source_after_filter.Himalayas }}\n- RemoteJobs.org: {{ $json.Q3_jobs_per_source_after_filter.RemoteJobs.org }}\n- Arbeitnow: {{ $json.Q3_jobs_per_source_after_filter.Arbeitnow }}\n- RemoteOK: {{ $json.Q3_jobs_per_source_after_filter.RemoteOK }}\n\n**Remote Ratio:** {{ $json.Q4_remote_status_percentage.Remote }}%\n\n**Student:** {{ $json.student_name }} ({{ $json.student_email }})",
+            "type": "string"
+          }
+        ],
+        "options": {}
+      },
+      "id": "76aff9ec-8ab0-42be-aca9-578a6dc50e73",
+      "name": "Format Email",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "tahanaeem7372@gmail.com",
+        "subject": "=Job Market Analytics Report - {{ $now.format('yyyy-MM-dd') }}",
+        "emailType": "text",
+        "message": "Job Market Analytics Report Created SuccessFully !",
+        "options": {}
+      },
+      "id": "e1cc50d4-4b8e-472c-b6c4-22fdbdcb5612",
+      "name": "Send Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        0
+      ],
+      "webhookId": "da4c7656-9425-4c63-bc47-218c3b804a8b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rRKGjzC7BLsDBF0Q",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "job-market",
+        "options": {}
+      },
+      "id": "f47e0df0-3197-45e8-8d3c-681806855002",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "6b7d27b2-e45f-40eb-b3ad-6bf3ce7c8a45"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Format Email": {
+      "main": [
+        [
+          {
+            "node": "Send Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Format Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5ada1869-f034-4700-93a9-b2decefb58f3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d044342359d9f5120906f7e5d03f47c3c9f5a898484d6a0dbf5fda276d195aa8"
+  },
+  "id": "bouPgu5IvRk5H6jt",
+  "tags": []
+}

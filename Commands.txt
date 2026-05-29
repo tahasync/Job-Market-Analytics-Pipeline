@@ -1,0 +1,23 @@
+# START (Flask + Docker):
+powershell -ExecutionPolicy Bypass -File .\compose-up.ps1
+
+# URLs:
+#   Airflow  http://localhost:8080   (airflow / airflow) — unpause job_market_pipeline
+#   n8n      http://localhost:5678
+#   Flask    http://localhost:8005
+
+# DAG: runs once per day (@daily)
+
+# n8n Gmail (in published workflow UI):
+#   1. Open "Taha Job Market Pipeline Alert System" (Published)
+#   2. EmailAlertDispatcher node -> Send To: tahanaeem7372@gmail.com
+#   3. Keep your Gmail OAuth credential (first in list)
+#   4. Webhook path must be: job-market-completed
+#   5. Save and keep workflow Published + Active
+
+# Test webhook from PowerShell:
+# $b = Get-Content data\processed\metrics_summary.json -Raw | ConvertFrom-Json
+# $b | Add-Member student_name "Muhammad Taha" -Force
+# $b | Add-Member student_email "tahanaeem7372@gmail.com" -Force
+# $b | Add-Member triggered_at (Get-Date -Format o) -Force
+# Invoke-RestMethod -Uri http://localhost:5678/webhook/job-market-completed -Method POST -Body ($b|ConvertTo-Json -Depth 10) -ContentType application/json

@@ -1,0 +1,525 @@
+
+University of Central Punjab
+Faculty of IT &amp;CS 
+Department of Applied Computing &amp;Technologies
+Subject: Tools &amp; Techniques for DS. 
+Date:  DATE \@ "M/d/yyyy" 5/9/2026                               Assignment # 3                                                                            Total Marks: 100                     
+CLO
+CLO STATEMENT
+Bloom’s Taxonomy Level
+PLO
+3
+Design and implement scheduled data pipelines using Apache Airflow and integrate multi-step automated workflows.
+C3
+P5
+Assignment Focus
+Students will build a complete data pipeline that collects job data from at least four free sources, filters AI/ML/Data-related jobs, cleans and standardizes the dataset in KNIME, orchestrates the workflow in Apache Airflow, and sends a final notification or summary through n8n.
+The assignment emphasizes data engineering thinking: extraction, schema standardization, cleaning, validation, orchestration, notification, and business analysis.
+Item
+Requirement
+Minimum sources
+At least 4 free job APIs or public job sources
+Mandatory domain filter
+AI, ML, Data Science, Data Analytics, Data Engineering, BI, ETL, Analytics Engineering
+Mandatory orchestration
+One Airflow DAG with multiple tasks
+Mandatory cleaning
+KNIME workflow; students may choose any KNIME nodes
+Mandatory notification
+n8n alert, email, webhook, or summary flow
+Mandatory analysis
+Source counts, remote/on-site ratio, experience brackets, 0-1 year jobs, average salary in USD
+
+Table of Contents
+Assignment Scenario
+Confirmed Free Data Sources and API Links
+Important Compatibility Note
+End-to-End Pipeline Architecture
+Required Project Structure
+Extraction Requirements
+Standard Final Dataset Schema
+AI/ML/Data Job Filtering Requirement
+Salary Extraction and USD Conversion Requirement
+Experience-Year Bracket Requirement
+KNIME Cleaning and Transformation Requirements
+Airflow DAG Requirements
+n8n Automation Requirements
+Required Data Quality Checks
+Required Analysis Questions
+Final Report Requirements
+Student Deliverables
+Marking Rubric
+Optional Advanced Features
+Reference Links
+
+1. Assignment Scenario
+You are working as a junior data engineer in a recruitment analytics company. The company wants to monitor AI, machine learning, data science, data analytics, data engineering, and BI jobs from multiple online job sources.
+Manual job monitoring is slow and inconsistent because each website has different fields, data quality, job descriptions, and salary formats. Your task is to design and implement an automated job market analytics pipeline that extracts job data, standardizes it, filters relevant jobs, performs cleaning, calculates business metrics, and sends an automated notification or summary.
+Important Scope
+The final cleaned dataset must contain only AI/ML/Data-related jobs.
+The project is not only about collecting data. The main learning outcome is to convert messy multi-source job data into a clean, validated, analytics-ready dataset.
+2. Confirmed Free Data Sources and API Links
+Students must collect data from at least four free job sources. The recommended primary sources are listed below. These sources use public JSON endpoints and do not require paid accounts for normal academic use.
+Source
+Purpose
+Access
+Main API Link
+Notes
+Arbeitnow
+General jobs with Europe/Germany focus; includes remote flag
+Free, no API key
+https://www.arbeitnow.com/api/job-board-api
+Good source for both remote and on-site examples
+RemoteOK
+Remote job listings; includes salary fields for some jobs
+Public JSON feed
+https://remoteok.com/api
+Remote-only source; useful salary fields
+Himalayas
+Remote job listings with filters for keyword, seniority, employment type, country
+Free public JSON API; no authentication
+https://himalayas.app/jobs/api/search?q=data&amp;sort=recent&amp;page=1
+Limit is small per request; students should paginate responsibly
+RemoteJobs.org
+Remote job listings with category, keyword, type, pagination
+Free, no signup, no key
+https://remotejobs.org/api/v1/jobs?category=data-science&amp;limit=50
+Good for data-science category and salary fields
+Optional backup sources: Jobicy Remote Jobs API and Remotive Remote Jobs API. Use them only if one of the primary sources is unavailable. Students must document why they used a backup source. Free Jobs and other API
+3. Important Compatibility Note
+The four sources will not return exactly the same raw schema. This is expected and is part of the assignment. Students must map all raw fields into one standardized schema before loading the data into KNIME for cleaning and transformation.
+Concept
+Arbeitnow
+RemoteOK
+Himalayas
+RemoteJobs.org
+Standard Field
+Job title
+title
+position
+title
+title
+title
+Company
+company_name
+company
+companyName
+company.name
+company_name
+Location
+location
+location
+locationRestrictions / location
+location
+location_raw
+Remote status
+remote boolean
+remote by source
+remote by source
+remote by source
+remote_status
+Description
+description
+description
+description
+description
+description
+Tags / category
+tags
+tags
+categories / skills
+category
+tags_raw / category_raw
+Date
+created_at
+date / epoch
+postedAt / date
+posted_at
+publication_date
+Salary
+usually in description
+salary_min, salary_max
+minSalary, maxSalary if available
+salary_min, salary_max, salary_text
+salary fields + salary_text_raw
+URL
+url
+url / apply_url
+applicationLink
+url / apply_url
+job_url
+Answer to the data-source question
+No, the sources do not generate identical data. They generate similar job-posting information with different field names and different levels of completeness.
+This is why the assignment requires a schema standardization step. After mapping, all sources must produce one common final dataset.
+4. End-to-End Pipeline Architecture
+The complete solution should follow this pipeline design:
+Arbeitnow API      -&gt; raw_arbeitnow_jobs.csv
+RemoteOK API       -&gt; raw_remoteok_jobs.csv
+Himalayas API      -&gt; raw_himalayas_jobs.csv
+RemoteJobs.org API -&gt; raw_remotejobs_jobs.csv
+All raw files      -&gt; merged_raw_jobs.csv
+merged_raw_jobs.csv -&gt; KNIME cleaning and transformation workflow
+KNIME output       -&gt; clean_ai_ml_data_jobs.csv
+Validation script  -&gt; data quality checks and summary metrics
+n8n workflow       -&gt; email/Google Sheet/webhook alert
+Apache Airflow     -&gt; orchestrates the complete process
+5. Required Project Structure
+Students should submit a clean project folder. The exact file names may vary, but the structure must be understandable and organized.
+job_market_project/
+  dags/
+    job_market_analytics_pipeline.py
+  scripts/
+    extract_arbeitnow.py
+    extract_remoteok.py
+    extract_himalayas.py
+    extract_remotejobs.py
+    merge_sources.py
+    validate_outputs.py
+    calculate_metrics.py
+  data/
+    raw/
+    merged/
+    processed/
+    archive/
+  knime_workflow/
+    job_market_cleaning_workflow/
+  n8n/
+    job_market_alert_workflow.json
+  report/
+    final_report.pdf or final_report.docx
+  screenshots/
+    airflow/
+    knime/
+    n8n/
+    output/
+6. Extraction Requirements
+Students must create an extraction process for each required source. They may use Python, HTTP requests, API clients, or another appropriate method. The important requirement is that the extracted raw data is reproducible and saved before cleaning.
+Each source must produce a separate raw file before merging.
+Each raw file must include the source name and scrape/extraction date.
+The extraction process must not require paid API keys.
+The extraction process must be respectful: avoid excessive requests, use pagination carefully, and do not overload public services.
+Students must not use websites that require login, account scraping, CAPTCHA bypassing, or prohibited automation.
+If a source is temporarily unavailable, students may replace it with a backup source and explain the reason in the report.
+Raw Output File
+Expected Minimum Content
+raw_arbeitnow_jobs.csv
+Job records from Arbeitnow with source='Arbeitnow'
+raw_remoteok_jobs.csv
+Job records from RemoteOK with source='RemoteOK'
+raw_himalayas_jobs.csv
+Job records from Himalayas with source='Himalayas'
+raw_remotejobs_jobs.csv
+Job records from RemoteJobs.org with source='RemoteJobs.org'
+merged_raw_jobs.csv
+Combined standardized raw dataset from all sources
+7. Standard Final Dataset Schema
+After extraction and schema mapping, the merged dataset must be transformed into the following standard fields. Students may add extra columns if useful, but these fields are mandatory.
+Field
+Description
+source
+Source name such as Arbeitnow, RemoteOK, Himalayas, RemoteJobs.org
+job_id
+Unique source job ID or generated ID if source ID is unavailable
+title
+Clean job title
+company_name
+Clean company name
+location_raw
+Original location text from the source
+remote_status
+Remote, On-site, Hybrid, or Unknown
+job_type
+Full-time, Part-time, Contract, Freelance, Internship, or Unknown
+category_raw
+Original category from source
+tags_raw
+Original tags/skills text or list
+description
+Clean text description with HTML removed
+publication_date
+Date when job was posted
+job_url
+Original job URL or application URL
+salary_text_raw
+Original salary text if available
+salary_min_raw
+Raw minimum salary before currency conversion
+salary_max_raw
+Raw maximum salary before currency conversion
+currency_raw
+Detected currency such as USD, EUR, GBP, PKR
+salary_min_usd
+Annual salary minimum converted to USD
+salary_max_usd
+Annual salary maximum converted to USD
+salary_mid_usd
+Average of min and max annual USD salary
+experience_years_min
+Minimum experience years extracted or null
+experience_years_max
+Maximum experience years extracted or null
+experience_bracket
+0-1, 1-3, 3-5, 5-8, 8+, or Not mentioned
+extracted_skills
+Standardized skill list such as Python, SQL, Tableau, ML, Airflow
+job_category_clean
+Data Analytics, Data Science, Data Engineering, AI/ML, BI, Analytics Engineering, Other Data
+scrape_date
+Date when the data was collected
+8. AI/ML/Data Job Filtering Requirement
+Filtering is mandatory. The final cleaned dataset must only contain jobs related to AI, ML, Data Science, Data Analytics, Data Engineering, Business Intelligence, ETL, or Analytics Engineering.
+Students must design the filtering logic themselves in KNIME. They may use any KNIME nodes or workflow design. The assignment only defines what the filter must achieve.
+Relevant Job Group
+Example Keywords
+Data Analytics
+data analyst, data analytics, reporting analyst, product analyst, marketing analytics
+Data Science
+data scientist, statistical modeling, predictive modeling, experimentation, NLP
+Data Engineering
+data engineer, ETL, ELT, data pipeline, warehouse, lakehouse, dbt, Airflow
+AI / Machine Learning
+machine learning, ML engineer, AI engineer, deep learning, LLM, computer vision, MLOps
+Business Intelligence
+BI analyst, business intelligence, Power BI, Tableau, dashboard developer
+Analytics Engineering
+analytics engineer, dbt, semantic layer, metrics layer, data modeling
+Required Filter Evidence
+Students must report the number of rows before filtering and after filtering.
+Students must show at least 10 sample accepted jobs and 10 sample removed jobs in the report.
+Students must explain the filtering logic in plain language, not only show screenshots.
+9. Salary Extraction and USD Conversion Requirement
+Salary analysis is mandatory. Students must attempt to extract salary information from structured salary fields and from salary text inside job descriptions. Salaries must be standardized into annual USD values.
+If a source provides salary_min and salary_max, use those fields directly after cleaning.
+If salary appears only in text, extract salary ranges from the description where possible.
+Treat salary value 0 as missing, not as a real salary.
+Do not include missing salary records in the average salary calculation.
+Create salary_min_usd, salary_max_usd, and salary_mid_usd.
+Average salary must be calculated using salary_mid_usd only where salary_mid_usd is not null.
+Salary Case
+Required Treatment
+$85,000 - $95,000 a year
+currency=USD, annual min=85000, annual max=95000
+EUR 60,000 - 75,000
+currency=EUR, convert annual salary to USD
+£40k - £55k
+currency=GBP, convert k values to full annual amount, then USD
+$40/hour
+convert hourly to annual using 40 hours/week x 52 weeks = 2080 hours
+$5,000/month
+convert monthly to annual using x12
+salary_min=0 and salary_max=0
+mark salary as missing
+Recommended free exchange-rate API: Frankfurter API. Example pair endpoint format: https://api.frankfurter.dev/v2/rate/EUR/USD. Students may use another free, no-key exchange-rate source, but they must mention the API name, conversion date, and currency rates used.
+salary_mid_raw = (salary_min_raw + salary_max_raw) / 2
+annual_salary_raw = salary_mid_raw x period_factor
+salary_mid_usd = annual_salary_raw x fx_rate_to_usd
+average_salary_usd = AVG(salary_mid_usd) where salary_mid_usd is not null
+10. Experience-Year Bracket Requirement
+The analysis must be based on experience-year brackets. Students must extract or infer experience requirements from job titles and descriptions. If no experience is mentioned, the job should be marked as Not mentioned.
+Experience Bracket
+Rules / Examples
+0-1 years
+0-1 years, entry level, fresh graduate, new grad, internship, trainee, junior with no explicit higher requirement
+1-3 years
+1+ years, 2 years, 1-3 years, junior/mid where description implies early career
+3-5 years
+3+ years, 4 years, 3-5 years, mid-level
+5-8 years
+5+ years, 6-8 years, senior where explicit years are in this range
+8+ years
+8+ years, 10+ years, principal, staff, lead, director when explicit high experience is mentioned
+Not mentioned
+No clear experience requirement found
+Mandatory Experience Analysis
+Students must calculate job count and percentage for each experience bracket.
+Students must specifically answer: how many AI/ML/Data jobs are available for 0-1 year experience candidates?
+Students must show at least five examples of extracted experience rules from job descriptions.
+11. KNIME Cleaning and Transformation Requirements
+Students must use KNIME to clean and transform the merged dataset. The instructor should not prescribe the exact nodes. Students may choose any KNIME nodes, components, or workflow design as long as the required outcomes are achieved.
+Read the merged raw dataset from all selected sources.
+Remove or fix HTML tags, special symbols, inconsistent spacing, and encoding issues in descriptions.
+Standardize title, company name, location, job type, and date columns.
+Deduplicate jobs using job_url when available; otherwise use a combination of title, company, source, and location.
+Apply the mandatory AI/ML/Data relevance filter.
+Extract and standardize important skills from title, tags, and description.
+Create a clean job category column such as Data Analytics, Data Engineering, Data Science, AI/ML, BI, Analytics Engineering, or Other Data.
+Standardize remote_status into Remote, On-site, Hybrid, or Unknown.
+Extract experience years and create experience_bracket.
+Extract salary, normalize pay period, convert currencies, and create USD salary fields.
+Create final clean CSV file and summary metrics file.
+No Required KNIME Node List
+Students are free to choose the KNIME nodes and methods. The grading will be based on correctness of output, workflow clarity, validation, and explanation, not on using a specific node name.
+
+
+12. Airflow DAG Requirements
+Students must create one Apache Airflow DAG that orchestrates the full workflow. The DAG should contain multiple tasks, not separate DAGs for each step.
+Task
+Purpose
+extract_arbeitnow
+Collect raw data from Arbeitnow
+extract_remoteok
+Collect raw data from RemoteOK
+extract_himalayas
+Collect raw data from Himalayas
+extract_remotejobs
+Collect raw data from RemoteJobs.org
+merge_sources
+Standardize schemas and merge all raw datasets
+run_knime_workflow
+Execute the KNIME workflow that cleans and transforms data
+validate_clean_output
+Check row counts, columns, missing values, duplicates, and output existence
+calculate_metrics
+Generate final analysis metrics for report and notification
+trigger_n8n_workflow
+Send metrics/notification to n8n webhook
+archive_outputs
+Save timestamped raw and cleaned output files
+The four extraction tasks can run in parallel because they do not depend on each other. The merge task should run only after all extraction tasks are complete.
+13. n8n Automation Requirements
+Students must create an n8n workflow that is triggered after the clean output and metrics are generated. The n8n workflow may send an email, update Google Sheets, post to Slack/Discord/Telegram, or call another webhook.
+The n8n notification must include total cleaned AI/ML/Data jobs.
+It must include jobs by source.
+It must include the remote/on-site/hybrid ratio.
+It must include count of 0-1 year jobs.
+It must include average salary in USD where salary is available.
+It must include pipeline run status: Success or Failed.
+14. Required Data Quality Checks
+The final solution must include clear checks. These checks can be implemented in Python, KNIME, or another appropriate layer, but the final report must show the check results.
+Check
+Expected Evidence
+API response check
+Each source returns a successful response and at least one job record.
+Source count check
+Show raw job count from each source before merging.
+Schema check
+Final standardized dataset contains all mandatory columns.
+Duplicate check
+Show duplicate count before and after deduplication.
+Relevance filter check
+Show row count before and after AI/ML/Data filtering.
+Missing value check
+Show missing percentage for title, company_name, job_url, description, publication_date, salary fields.
+Date check
+Publication dates must be valid dates; invalid dates should be fixed or marked.
+Remote status check
+Every row should be Remote, On-site, Hybrid, or Unknown.
+Salary check
+Salary zeros must be converted to null; USD salary must not be calculated from missing salary.
+Currency conversion check
+Show currencies detected and exchange-rate source/date used.
+Experience bracket check
+Every row must have one experience bracket or Not mentioned.
+Output file check
+clean_ai_ml_data_jobs.csv and metrics_summary.csv must exist and must not be empty.
+15. Required Analysis Questions
+The final report must answer the following analysis questions using the cleaned dataset.
+How many total jobs were collected from each source before filtering?
+How many jobs remained after AI/ML/Data filtering?
+Which source contributed the highest number of relevant AI/ML/Data jobs?
+What is the ratio of remote, on-site, hybrid, and unknown jobs?
+What is the remote/on-site ratio by source? Explain the limitation that some sources are remote-only.
+How many jobs are available for 0-1 year experience candidates?
+What is the job distribution across experience brackets: 0-1, 1-3, 3-5, 5-8, 8+, and Not mentioned?
+What is the average salary in USD overall? Calculate only from rows where salary is available.
+What is the average salary in USD by job category?
+What is the average salary in USD by experience bracket?
+Which skills appear most frequently in the final dataset?
+Which companies posted the most AI/ML/Data-related jobs?
+Which job category has the highest number of openings?
+Which source has the highest salary coverage percentage?
+What are the major data quality issues found in the raw sources?
+Recommended Visualizations
+Bar chart: jobs by source before and after filtering.
+Bar or pie chart: remote/on-site/hybrid/unknown ratio.
+Bar chart: experience bracket distribution.
+Bar chart: 0-1 year jobs by category.
+Bar chart: average salary in USD by category and experience bracket.
+Bar chart: top 10 skills.
+16. Final Report Requirements
+Introduction and problem statement
+Source selection and API links
+Pipeline architecture diagram
+Extraction process explanation for each source
+Schema mapping explanation
+KNIME cleaning and transformation explanation
+AI/ML/Data filtering logic and evidence
+Salary extraction and USD conversion method
+Experience-year bracket method
+Airflow DAG explanation
+n8n workflow explanation
+Data quality checks and results
+Analysis answers and visualizations
+Challenges and solutions
+Conclusion
+
+17. Student Deliverables
+Deliverable
+Required
+Source extraction scripts
+All scripts or workflows used to collect data from four sources
+Raw data files
+Separate raw files for each source
+Merged raw dataset
+One standardized raw dataset before KNIME cleaning
+KNIME workflow
+Complete workflow folder or exported workflow
+Cleaned dataset
+clean_ai_ml_data_jobs.csv
+Metrics summary
+metrics_summary.csv or JSON
+Airflow DAG
+DAG file and successful run screenshots
+n8n workflow
+Exported workflow JSON and output screenshot
+Final report
+PDF or Word document
+Screenshots
+Airflow graph, Airflow success, KNIME workflow, KNIME output, n8n workflow, notification result, cleaned CSV preview
+VIDEO
+WHOLE PROJECT WORKING VIDEO
+VIDEO 1. Individual component working
+VIDEO 2. whole project with DAG run working
+18. Marking Rubric
+Component
+Marks
+Four-source extraction and raw data storage
+15
+Schema mapping and source standardization
+10
+KNIME cleaning and AI/ML/Data filtering
+20
+Salary extraction and USD conversion
+10
+Experience bracket extraction and analysis
+10
+Airflow DAG orchestration
+15
+n8n notification/automation
+8
+Data quality checks
+7
+Final report, screenshots, and explanation
+5
+Total
+100
+19. Optional Advanced Features
+Store raw and cleaned data in PostgreSQL, MySQL, Snowflake, or SQLite.
+Create a Power BI, Tableau, or KNIME dashboard.
+Add historical tracking by scrape date.
+Add Airflow failure alert through n8n.
+Create a Flask API endpoint to trigger the pipeline.
+Add incremental loading: only add new jobs that were not collected before.
+Add richer skill extraction and skill grouping.
+Add a data dictionary and business glossary.
+20. Reference Links
+Arbeitnow Job Board API: https://www.arbeitnow.com/blog/job-board-api
+Arbeitnow API Endpoint: https://www.arbeitnow.com/api/job-board-api
+RemoteOK API Endpoint: https://remoteok.com/api
+Himalayas Remote Jobs API Docs: https://himalayas.app/api
+Himalayas Search API Example: https://himalayas.app/jobs/api/search?q=data&amp;sort=recent&amp;page=1
+RemoteJobs.org API Docs: https://remotejobs.org/api-access
+RemoteJobs.org Jobs Endpoint: https://remotejobs.org/api/v1/jobs?category=data-science&amp;limit=50
+Frankfurter Exchange Rate API: https://frankfurter.dev/
+Jobicy Remote Jobs API Backup: https://jobicy.com/api/v2/remote-jobs
+Remotive Remote Jobs API Backup: https://remotive.com/remote-jobs/api
