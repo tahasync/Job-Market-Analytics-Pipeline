@@ -1,5 +1,5 @@
 {
-  "name": "My workflow",
+  "name": "Job Market Pipeline Alert System",
   "nodes": [
     {
       "parameters": {
@@ -24,7 +24,7 @@
     },
     {
       "parameters": {
-        "sendTo": "tahanaeem7372@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "=Job Market Analytics Report - {{ $now.format('yyyy-MM-dd') }}",
         "emailType": "text",
         "message": "Job Market Analytics Report Created SuccessFully !",

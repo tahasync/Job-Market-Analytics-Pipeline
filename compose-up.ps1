@@ -53,7 +53,8 @@ if (-not (Test-FlaskApi)) {
         }
     }
     if (-not $env:KNIME_API_KEY) {
-        $env:KNIME_API_KEY = "job-market-secret-2026"
+        Write-Host "WARNING: KNIME_API_KEY not set. API endpoint will reject unauthenticated requests." -ForegroundColor Yellow
+        $env:KNIME_API_KEY = ""
     }
     Start-Process -FilePath "python" `
         -ArgumentList $FlaskScript `

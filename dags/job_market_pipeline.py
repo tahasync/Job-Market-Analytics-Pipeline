@@ -26,7 +26,7 @@ SCRIPTS_PATH = os.path.join(BASE_PATH, "scripts")
 
 # Flask API running on Windows host (accessed via host.docker.internal)
 FLASK_API_URL = "http://host.docker.internal:8005/run-knime"
-FLASK_API_KEY = os.environ.get("KNIME_API_KEY", "job-market-secret-2026")
+FLASK_API_KEY = os.environ.get("KNIME_API_KEY", "")
 
 # n8n webhook (inside Docker network, accessible via service name)
 N8N_WEBHOOK_URL = "http://n8n:5678/webhook/job-market"
@@ -151,7 +151,7 @@ def trigger_n8n_workflow(**context):
     payload = {
         **metrics,
         "student_name": os.environ.get("STUDENT_NAME", "Muhammad Taha"),
-        "student_email": os.environ.get("STUDENT_EMAIL", "tahanaeem7372@gmail.com"),
+        "student_email": os.environ.get("STUDENT_EMAIL", ""),
         "source": "airflow",
         "pipeline": "job_market_pipeline",
         "triggered_at": datetime.now().isoformat(),

@@ -18,7 +18,7 @@ BAT_FILE = os.environ.get(
     "KNIME_BAT_FILE",
     os.path.join(PROJECT_DIR, "flask_api", "run_job_market_cleaning.bat"),
 )
-API_KEY = os.environ.get("KNIME_API_KEY", "job-market-secret-2026")
+API_KEY = os.environ.get("KNIME_API_KEY", "")
 # ^ falls back to default if env var not set; set KNIME_API_KEY in .env for production
 PORT = int(os.environ.get("FLASK_PORT", "8005"))
 

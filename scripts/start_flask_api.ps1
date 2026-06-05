@@ -13,12 +13,12 @@ Write-Host "  GET  /"
 Write-Host "  GET  /status"
 Write-Host "  POST /run-knime"
 Write-Host ""
-Write-Host 'Test: Invoke-RestMethod -Uri "http://localhost:8005/run-knime" -Method POST -Headers @{"X-API-Key"="job-market-secret-2026"}'
+Write-Host 'Test: Invoke-RestMethod -Uri "http://localhost:8005/run-knime" -Method POST -Headers @{"X-API-Key"="<your-api-key>"}'
 Write-Host "========================================" -ForegroundColor Cyan
 
 $env:JOB_MARKET_PROJECT_DIR = $ProjectRoot
 $env:KNIME_BAT_FILE = Join-Path $FlaskDir "run_job_market_cleaning.bat"
-# Read KNIME_API_KEY from .env or use default
+# Read KNIME_API_KEY from .env
 $envFile = Join-Path $ProjectRoot ".env"
 if (Test-Path $envFile) {
     $envVars = Get-Content $envFile | Where-Object { $_ -match '^[^#]' }
@@ -31,7 +31,7 @@ if (Test-Path $envFile) {
     }
 }
 if (-not $env:KNIME_API_KEY) {
-    $env:KNIME_API_KEY = "job-market-secret-2026"
+    Write-Host "WARNING: KNIME_API_KEY not set. API calls will fail. Set it in .env file." -ForegroundColor Yellow
 }
 
 Set-Location $FlaskDir
